@@ -5,7 +5,8 @@
  * Base URL: NEXT_PUBLIC_API_URL (default: http://localhost:8000)
  * 
  * Exact Endpoints:
- * - GET  /dossiers
+ * - GET  /health
+ * - GET  /dossiers/{id}
  * - GET  /dossiers/{id}/triage
  * - POST /dossiers/{id}/audit
  * - GET  /dossiers/{id}/visual-package
@@ -18,7 +19,8 @@
  */
 
 export interface FrozenAlphaApiEndpoints {
-  listDossiers: '/dossiers';
+  health: '/health';
+  getDossier: '/dossiers/:id';
   getDossierTriage: '/dossiers/:id/triage';
   triggerAudit: '/dossiers/:id/audit';
   getVisualPackage: '/dossiers/:id/visual-package';

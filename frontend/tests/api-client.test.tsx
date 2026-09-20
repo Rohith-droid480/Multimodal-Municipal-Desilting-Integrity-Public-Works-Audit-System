@@ -13,20 +13,41 @@ describe('Canonical Frozen Alpha API Client', () => {
     vi.restoreAllMocks();
   });
 
-  it('calls GET /dossiers when listing dossiers', async () => {
-    const mockData = [{ id: 'DOS-001', claimNumber: 'RA-01' }];
+  it('calls GET /health when checking connectivity', async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => mockData,
+      json: async () => ({ status: 'healthy' }),
     } as any);
 
-    const result = await client.listDossiers();
+    const isHealthy = await client.checkHealth();
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:8000/dossiers',
+      'http://localhost:8000/health',
+      expect.objectContaining({ method: 'GET', signal: expect.any(Object) })
+    );
+    expect(isHealthy).toBe(true);
+    expect(client.getConnectionState()).toBe('LIVE_BACKEND');
+  });
+
+  it('returns benchmark dossiers when listing dossiers without calling nonexistent route', async () => {
+    global.fetch = vi.fn();
+    const result = await client.listDossiers();
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  it('calls GET /dossiers/{id} when retrieving a dossier', async () => {
+    const mockDossier = { id: 'DOS-001', claimNumber: 'RA-01' };
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => mockDossier,
+    } as any);
+
+    const result = await client.getDossier('DOS-001');
+    expect(global.fetch).toHaveBeenCalledWith(
+      'http://localhost:8000/dossiers/DOS-001',
       expect.objectContaining({ signal: expect.any(Object) })
     );
-    expect(result).toEqual(mockData);
-    expect(client.getConnectionState()).toBe('LIVE_BACKEND');
+    expect(result).toEqual(mockDossier);
   });
 
   it('calls GET /dossiers/{id}/triage', async () => {
@@ -112,11 +133,11 @@ describe('Canonical Frozen Alpha API Client', () => {
     expect(result.success).toBe(true);
   });
 
-  it('falls back to benchmark fixtures when backend is offline', async () => {
+  it('falls back to offline fixture state when health check fails', async () => {
     global.fetch = vi.fn().mockRejectedValue(new Error('Connection refused'));
 
-    const result = await client.listDossiers();
-    expect(result.length).toBe(3);
+    const isHealthy = await client.checkHealth();
+    expect(isHealthy).toBe(false);
     expect(client.getConnectionState()).toBe('OFFLINE_FIXTURE');
   });
 });

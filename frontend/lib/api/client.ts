@@ -16,7 +16,8 @@ import {
  * Base URL: NEXT_PUBLIC_API_URL (default: http://localhost:8000)
  * 
  * Endpoints:
- * - GET  /dossiers
+ * - GET  /health
+ * - GET  /dossiers/{id}
  * - GET  /dossiers/{id}/triage
  * - POST /dossiers/{id}/audit
  * - GET  /dossiers/{id}/visual-package
@@ -48,13 +49,13 @@ export class AuditApiClient {
   }
 
   /**
-   * Check backend health / connectivity.
+   * Check backend health / connectivity using frozen Alpha GET /health endpoint.
    */
   async checkHealth(): Promise<boolean> {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 2000);
-      const res = await fetch(`${this.baseUrl}/dossiers`, {
+      const res = await fetch(`${this.baseUrl}/health`, {
         method: 'GET',
         signal: controller.signal,
       });
@@ -71,24 +72,33 @@ export class AuditApiClient {
   }
 
   /**
-   * GET /dossiers
+   * List dossiers for triage matrix.
+   * Note: Frozen Alpha backend (727b9e3) does not implement a collective GET /dossiers route.
+   * Returns benchmark triage dossiers with explicit offline/fixture provenance.
    */
   async listDossiers(): Promise<DossierListItem[]> {
+    return BENCHMARK_DOSSIER_LIST;
+  }
+
+  /**
+   * GET /dossiers/{id}
+   */
+  async getDossier(dossierId: string): Promise<DossierSummary | null> {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000);
-      const res = await fetch(`${this.baseUrl}/dossiers`, { signal: controller.signal });
+      const res = await fetch(`${this.baseUrl}/dossiers/${encodeURIComponent(dossierId)}`, {
+        signal: controller.signal,
+      });
       clearTimeout(timeoutId);
       if (res.ok) {
         this.connectionState = 'LIVE_BACKEND';
-        const data = await res.json();
-        return Array.isArray(data) ? data : data.dossiers || BENCHMARK_DOSSIER_LIST;
+        return await res.json();
       }
     } catch {
       // Offline fallback
     }
-    this.connectionState = 'OFFLINE_FIXTURE';
-    return BENCHMARK_DOSSIER_LIST;
+    return BENCHMARK_DOSSIERS[dossierId] || null;
   }
 
   /**
