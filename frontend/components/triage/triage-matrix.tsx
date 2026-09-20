@@ -7,7 +7,6 @@ import {
   Search, 
   Filter, 
   ArrowRight, 
-  Play, 
   Download, 
   AlertTriangle, 
   CheckCircle2, 
@@ -15,7 +14,6 @@ import {
   FileSpreadsheet,
   Building2,
   MapPin,
-  RefreshCw,
   Server
 } from 'lucide-react';
 
@@ -23,7 +21,7 @@ interface TriageMatrixProps {
   dossiers: DossierListItem[];
   connectionState: 'LIVE_BACKEND' | 'OFFLINE_FIXTURE';
   onOpenDossier: (dossierId: string) => void;
-  onTriggerAudit: (dossierId: string) => Promise<void>;
+  onTriggerAudit?: (dossierId: string) => Promise<void>;
   onExportJson: (dossierId: string) => void;
   onExportMarkdown: (dossierId: string) => void;
 }
@@ -39,7 +37,6 @@ export const TriageMatrix: React.FC<TriageMatrixProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCase, setFilterCase] = useState<string>('ALL');
   const [filterTier, setFilterTier] = useState<string>('ALL');
-  const [auditingId, setAuditingId] = useState<string | null>(null);
 
   // Filter logic
   const filtered = dossiers.filter((d) => {
@@ -58,15 +55,6 @@ export const TriageMatrix: React.FC<TriageMatrixProps> = ({
   const totalExposure = dossiers.reduce((acc, d) => acc + d.financialExposureInr, 0);
   const avgArpi = Math.round(dossiers.reduce((acc, d) => acc + d.arpiScore, 0) / (dossiers.length || 1));
   const avgEcs = dossiers.reduce((acc, d) => acc + d.ecsScore, 0) / (dossiers.length || 1);
-
-  const handleAuditClick = async (dossierId: string) => {
-    setAuditingId(dossierId);
-    try {
-      await onTriggerAudit(dossierId);
-    } finally {
-      setAuditingId(null);
-    }
-  };
 
   return (
     <div className="flex-1 flex flex-col bg-app-bg text-slate-100 overflow-y-auto">
@@ -210,7 +198,6 @@ export const TriageMatrix: React.FC<TriageMatrixProps> = ({
             ) : (
               filtered.map((d) => {
                 const statusCfg = AUDIT_STATUS_CONFIG[d.status];
-                const isAuditing = auditingId === d.id;
 
                 let tierColor = 'bg-slate-800 text-slate-300 border-slate-700';
                 if (d.priorityTier === 'P1_CRITICAL') tierColor = 'bg-red-950 text-red-300 border-red-800';
@@ -300,20 +287,6 @@ export const TriageMatrix: React.FC<TriageMatrixProps> = ({
 
                     {/* Actions */}
                     <td className="py-3.5 text-right space-x-1.5">
-                      <button
-                        onClick={() => handleAuditClick(d.id)}
-                        disabled={isAuditing}
-                        title="Trigger Autonomous Multi-modal Audit (POST /dossiers/{id}/audit)"
-                        className="p-1.5 bg-app-elevated hover:bg-slate-700 text-slate-300 hover:text-slate-100 rounded border border-app-border transition-colors disabled:opacity-50"
-                        data-testid={`trigger-audit-btn-${d.id}`}
-                      >
-                        {isAuditing ? (
-                          <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-400" />
-                        ) : (
-                          <Play className="w-3.5 h-3.5 text-sky-400" />
-                        )}
-                      </button>
-
                       <button
                         onClick={() => onExportJson(d.id)}
                         title="Download GAGAS JSON Workpaper"

@@ -87,23 +87,20 @@ describe('Executive Case Triage Matrix Component', () => {
     expect(handleOpen).toHaveBeenCalledWith('DOSSIER-BLR-2026-W09-042');
   });
 
-  it('triggers onTriggerAudit when clicking Play button', async () => {
-    const handleAudit = vi.fn().mockResolvedValue(undefined);
+  it('triggers onExportJson when clicking JSON button', () => {
+    const handleExportJson = vi.fn();
     render(
       <TriageMatrix
         dossiers={BENCHMARK_DOSSIER_LIST}
         connectionState="OFFLINE_FIXTURE"
         onOpenDossier={vi.fn()}
-        onTriggerAudit={handleAudit}
-        onExportJson={vi.fn()}
+        onExportJson={handleExportJson}
         onExportMarkdown={vi.fn()}
       />
     );
 
-    const auditBtn = screen.getByTestId('trigger-audit-btn-DOSSIER-BLR-2026-W09-042');
-    await act(async () => {
-      fireEvent.click(auditBtn);
-    });
-    expect(handleAudit).toHaveBeenCalledWith('DOSSIER-BLR-2026-W09-042');
+    const jsonBtn = screen.getByTestId('export-json-btn-DOSSIER-BLR-2026-W09-042');
+    fireEvent.click(jsonBtn);
+    expect(handleExportJson).toHaveBeenCalledWith('DOSSIER-BLR-2026-W09-042');
   });
 });
