@@ -1,0 +1,39 @@
+problem statement 
+Final Problem Statement
+Multimodal Municipal Desilting Integrity & Public-Works Audit System
+Problem statement
+
+Municipal corporations hire contractors to desilt storm-water drains before and during monsoon seasons. Contractors submit evidence such as site photographs, weighbridge slips, vehicle/trip records, disposal records, measurement records, and invoices to demonstrate that the contracted work was completed and billed correctly.
+
+The problem is that these evidence sources are fragmented and are often reviewed independently. This creates a verification gap: inconsistencies can exist between what the photographs show, what the documents claim, where and when vehicles travelled, what quantities were weighed, and whether the claimed work is physically plausible. Your research documents examples involving questionable transport records, weighbridge irregularities, incomplete physical verification, and staged or misleading photographic evidence.
+
+
+
+in simple words
+
+Making Municipal Drain-Work Verification Easier and More Reliable
+
+Before the monsoon, city governments pay contractors to clean mud, garbage, and silt from storm-water drains so rainwater can flow properly. After the work, contractors submit photos, truck details, weighbridge slips, travel records, and bills as proof that the work was completed.
+
+The problem is that all this information is difficult to check together. Sometimes the photos, truck records, weights, locations, timings, or bills may not match each other. Audits and investigations have documented cases involving problems with transport records, weighbridge records, physical verification, and photographic evidence.
+
+What we want to solve
+
+We want to build a system that:
+
+takes all the contractor's evidence → checks it automatically → finds things that don't match → shows the auditor why something looks suspicious.
+
+For example:
+
+"The photo looks similar to an old submission."
+"This truck record does not match the vehicle."
+"The claimed journey does not match the time and distance."
+"The reported quantity has an inconsistency."
+
+The system does not accuse anyone of fraud. It simply tells the municipal officer:
+
+"These records don't match. Please check them."
+
+In one simple sentence
+
+Build an AI-powered system that helps cities check whether storm-drain cleaning work and the contractor's submitted proof actually match each other.

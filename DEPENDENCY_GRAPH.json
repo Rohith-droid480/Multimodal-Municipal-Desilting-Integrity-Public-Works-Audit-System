@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "project": "MuniAudit-AI",
+  "version": "1.0.0",
+  "layers": {
+    "presentation": {
+      "path": "frontend/",
+      "owner": "BETA",
+      "allowed_imports": ["app/api/types"],
+      "forbidden_imports": ["app/infrastructure", "app/domain", "alembic", "psycopg2"]
+    },
+    "application": {
+      "path": "app/api/",
+      "owner": "ALPHA",
+      "allowed_imports": ["app/domain", "app/infrastructure", "app/core", "app/storage", "app/ingestion", "app/ml", "app/rules", "app/fusion", "app/explainability"],
+      "forbidden_imports": ["frontend"]
+    },
+    "domain": {
+      "path": "app/domain/",
+      "owner": "ALPHA",
+      "allowed_imports": [],
+      "forbidden_imports": ["app/api", "app/infrastructure", "fastapi", "sqlalchemy", "boto3"]
+    },
+    "ingestion": {
+      "path": "app/ingestion/",
+      "owner": "ALPHA",
+      "allowed_imports": ["app/domain", "app/storage", "app/core"],
+      "forbidden_imports": ["frontend", "app/api", "app/infrastructure"]
+    },
+    "analysis": {
+      "path": "app/analysis/",
+      "owner": "BETA",
+      "allowed_imports": ["app/domain"],
+      "forbidden_imports": ["app/api", "frontend", "sqlalchemy"]
+    },
+    "infrastructure": {
+      "path": "app/infrastructure/",
+      "owner": "ALPHA",
+      "allowed_imports": ["app/domain", "app/core"],
+      "forbidden_imports": ["frontend", "app/api"]
+    },
+    "storage": {
+      "path": "app/storage/",
+      "owner": "ALPHA",
+      "allowed_imports": ["app/domain", "app/core"],
+      "forbidden_imports": ["frontend", "app/api"]
+    },
+    "ml": {
+      "path": "app/ml/",
+      "owner": "ALPHA",
+      "allowed_imports": ["app/domain", "app/core"],
+      "forbidden_imports": ["frontend", "app/api", "app/infrastructure", "sqlalchemy"]
+    },
+    "rules": {
+      "path": "app/rules/",
+      "owner": "ALPHA",
+      "allowed_imports": ["app/domain", "app/core", "app/ingestion"],
+      "forbidden_imports": ["frontend", "app/api", "app/infrastructure", "sqlalchemy"]
+    },
+    "fusion": {
+      "path": "app/fusion/",
+      "owner": "ALPHA",
+      "allowed_imports": ["app/domain", "app/core", "app/rules"],
+      "forbidden_imports": ["frontend", "app/api", "app/infrastructure", "sqlalchemy"]
+    },
+    "explainability": {
+      "path": "app/explainability/",
+      "owner": "ALPHA",
+      "allowed_imports": ["app/domain", "app/core", "app/rules", "app/fusion", "app/ml"],
+      "forbidden_imports": ["frontend", "app/api", "app/infrastructure", "sqlalchemy"]
+    }
+  }
+}

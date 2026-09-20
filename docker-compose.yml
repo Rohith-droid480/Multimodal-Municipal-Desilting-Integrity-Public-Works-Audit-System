@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: muniaudit_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: muniaudit_admin
+      POSTGRES_PASSWORD: muniaudit_secure_password
+      POSTGRES_DB: muniaudit_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U muniaudit_admin -d muniaudit_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: muniaudit_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://muniaudit_admin:muniaudit_secure_password@postgres:5432/muniaudit_db
+      - STORAGE_BACKEND=local
+      - LOCAL_STORAGE_PATH=/app/data/evidence_storage
+    volumes:
+      - ./data/evidence_storage:/app/data/evidence_storage
+
+volumes:
+  postgres_data:
